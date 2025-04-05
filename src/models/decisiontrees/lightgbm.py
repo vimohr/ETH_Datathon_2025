@@ -4,7 +4,7 @@ from sklearn.preprocessing import MinMaxScaler
 import joblib
 
 
-class CatBoost:
+class LGBM1:
 
     def __init__(self, **CatParam):
         self.pipeline = Pipeline(
