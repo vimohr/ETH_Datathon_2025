@@ -173,4 +173,5 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 
-data/
+data/rollout_data_IT.csv
+data/historical_metering_data_IT.csv
