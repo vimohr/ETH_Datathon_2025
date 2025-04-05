@@ -7,7 +7,7 @@ def visualisation(y_test, y_pred):
     Assuming y_test and y_pred are 2D arrays
     """
 
-    n_samples = 25  # number of samples to plot this is max i figure works
+    n_samples = 1  # number of samples to plot this is max i figure works
 
     trace_y_test = go.Scatter(
         x=list(range(len(y_test))),
@@ -47,4 +47,4 @@ def visualisation(y_test, y_pred):
     ]
     fig.update_layout(sliders=sliders)
 
-    fig.show()
+    return fig
