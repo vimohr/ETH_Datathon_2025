@@ -1,6 +1,7 @@
 from lightgbm import LGBMRegressor
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import MinMaxScaler
+from sklearn.multioutput import MultiOutputRegressor
 import joblib
 
 
@@ -10,7 +11,7 @@ class LGBM1:
         self.pipeline = Pipeline(
             steps=[
                 ("scaler", MinMaxScaler()),
-                ("lgbm", LGBMRegressor(**CatParam)),
+                ("lgbm", MultiOutputRegressor(LGBMRegressor(**CatParam))),
             ]
         )
 

@@ -2,7 +2,7 @@ import plotly.graph_objects as go
 import plotly.express as px
 
 
-def visualisation(y_test, y_pred, times):
+def visualisation(y_test, y_pred):
     """
     Assuming y_test and y_pred are 2D arrays
     """
@@ -36,7 +36,7 @@ def visualisation(y_test, y_pred, times):
                     "y": [y_test[i], y_pred[i]],
                     "x": [list(range(len(y_test))), list(range(len(y_pred)))],
                 },
-                {"title": f"time: {times[i]}"},
+                {"title": f"yes"},
             ],
             label=str(i),
         )
