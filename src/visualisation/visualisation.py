@@ -6,8 +6,11 @@ def visualisation(y_test, y_pred):
     """
     Assuming y_test and y_pred are 2D arrays
     """
-
-    n_samples = 1  # number of samples to plot this is max i figure works
+    print(f"y_test shape: {y_test.shape}")
+    print(f"y_pred shape: {y_pred.shape}")
+    print("y_test: ", len(y_test))
+    print("y_pred: ", len(y_pred))
+    n_samples = 792  # number of samples to plot this is max i figure works
 
     trace_y_test = go.Scatter(
         x=list(range(len(y_test))),
