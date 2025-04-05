@@ -7,3 +7,5 @@ scikit-learn
 scipy
 lightgbm
 catboost
+seaborn
+plotly
