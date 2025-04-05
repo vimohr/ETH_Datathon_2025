@@ -9,3 +9,5 @@ lightgbm
 catboost
 seaborn
 plotly
+statsmodels
+pmdarima
