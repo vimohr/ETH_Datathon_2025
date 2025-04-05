@@ -2,15 +2,12 @@ import plotly.graph_objects as go
 import plotly.express as px
 
 
-def visualisation(y_test, y_pred):
+def visualisation(y_test, y_pred, times):
     """
     Assuming y_test and y_pred are 2D arrays
     """
-    print(f"y_test shape: {y_test.shape}")
-    print(f"y_pred shape: {y_pred.shape}")
-    print("y_test: ", len(y_test))
-    print("y_pred: ", len(y_pred))
-    n_samples = 792  # number of samples to plot this is max i figure works
+
+    n_samples = len(y_pred)  # number of samples to plot this is max i figure works
 
     trace_y_test = go.Scatter(
         x=list(range(len(y_test))),
@@ -39,7 +36,7 @@ def visualisation(y_test, y_pred):
                     "y": [y_test[i], y_pred[i]],
                     "x": [list(range(len(y_test))), list(range(len(y_pred)))],
                 },
-                {"title": f"Sample {i}"},
+                {"title": f"time: {times[i]}"},
             ],
             label=str(i),
         )

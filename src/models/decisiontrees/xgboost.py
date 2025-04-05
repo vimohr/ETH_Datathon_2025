@@ -7,6 +7,8 @@ import joblib
 class XGB1:
     def __init__(self, **xgboost_params):
 
+        self.y_scaler = MinMaxScaler()
+
         self.pipeline = Pipeline(
             steps=[
                 ("scaler", MinMaxScaler()),
@@ -22,10 +24,19 @@ class XGB1:
         y : pd.Series(target variable)
         """
 
+        self.y_scaler.fit_transform(y)
         self.pipeline.fit(X, y)
 
     def predict(self, X_test):
         return self.pipeline.predict(X_test)
+
+    def rescale(self, y_pred):
+        """
+        Rescale the data using the fitted MinMaxScaler.
+        Parameters:
+        X : pd.DataFrame(single row in table)
+        """
+        return self.y_scaler.inverse_transform(y_pred)
 
     def save(self, path):
         """
