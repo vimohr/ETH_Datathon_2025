@@ -1,7 +1,9 @@
 import pandas as pd
 
 
-def get_data(country, indices=[], demand=[0], temp=[0], spv=[0], n_futures=4):
+def get_data(
+    country, indices=[], demand=[0], temp=[0], spv=[0], n_futures=31, rollout_values=[0]
+):
 
     file_paths = [
         f"data/datasets2025/historical_metering_data_{country}.csv",
@@ -49,7 +51,10 @@ def get_data(country, indices=[], demand=[0], temp=[0], spv=[0], n_futures=4):
     # Loop through each time and holiday
     for i, time in enumerate(full_time_index):
         # Check if the date of the current time matches any holiday (ignore time part)
-        if time in holiday_data[f"holiday_{country}"].dt.date.values:
+        if (
+            time in holiday_data[f"holiday_{country}"].dt.date.values
+            or time.weekday() >= 5
+        ):
             new_dataframe.at[i, "holiday"] = 1  # Set the holiday flag to 1
 
     # print(new_dataframe)
@@ -69,8 +74,6 @@ def get_data(country, indices=[], demand=[0], temp=[0], spv=[0], n_futures=4):
 
     # Loop through all DataFrames in the list and filter them
     for i in range(1, len(dataframes)):
-        # print(dataframes[i]['DATETIME'].isin(first_df_datetimes))
-        # print(dataframes[i]['DATETIME'].isin(first_df_datetimes)[dataframes[i]['DATETIME'].isin(first_df_datetimes) == False])
         # Filter each DataFrame by the 'DATETIME' values in the first DataFrame
         dataframes[i] = dataframes[i][
             dataframes[i]["DATETIME"].isin(first_df_datetimes)
@@ -109,23 +112,34 @@ def get_data(country, indices=[], demand=[0], temp=[0], spv=[0], n_futures=4):
                 if lag > 0:
                     col_name = f"{feature}_lag{lag}"
                     new_df[col_name] = new_df[base_col].shift(lag)
-                elif lag < 0:
-                    print("hello")
 
-                    col_name = f"{feature}_lead{abs(lag)}"
-                    new_df[col_name] = new_df[base_col].shift(lag)
+        new_df["hour"] = new_df["DATETIME"].dt.hour
+        new_df["day"] = new_df["DATETIME"].dt.day
+        new_df["month"] = new_df["DATETIME"].dt.month
 
         # Final cleanup
+        for i in range(1, n_futures):
+            new_df[target_col + f"_future{i}"] = new_df[target_col].shift(-i)
         new_df = new_df.dropna()
 
         times = new_df["DATETIME"]
         new_df = new_df.drop(columns=["DATETIME"]).reset_index(drop=True)
 
-        columns = new_df.columns.tolist()
-        columns = [col for col in columns if "lead" in col]
+        y = pd.DataFrame()
+        for i in range(n_futures):
+            if i == 0:
+                y["future0"] = new_df[target_col]
+            else:
+                y[f"future{i}"] = new_df[target_col + f"_future{i}"]
 
-        y = new_df[columns]
-        X = new_df.drop(columns=columns)
+        for rollout_value in rollout_values:
+            rollout_col = f"rollout_{rollout_value}"
+            new_df[rollout_col] = new_df[init_col].shift(rollout_value)
+
+        X = new_df.drop(
+            columns=[target_col]
+            + [target_col + f"_future{i}" for i in range(1, n_futures)]
+        ).reset_index(drop=True)
 
         all_dfs.append(X.to_numpy())
         all_ys.append(y.to_numpy())
