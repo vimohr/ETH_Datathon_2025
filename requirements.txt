@@ -9,3 +9,4 @@ lightgbm
 catboost
 seaborn
 plotly
+ipykernel
