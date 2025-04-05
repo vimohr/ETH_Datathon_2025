@@ -1,27 +1,20 @@
-import xgboost as xgb
+from catboost import CatBoostRegressor
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import MinMaxScaler
 import joblib
 
 
-class XGB1:
-    def __init__(self, **xgboost_params):
+class CatBoost:
 
+    def __init__(self, **CatParam):
         self.pipeline = Pipeline(
             steps=[
                 ("scaler", MinMaxScaler()),
-                ("xgb", xgb.XGBRegressor(**xgboost_params)),
+                ("catb", CatBoostRegressor(**CatParam)),
             ]
         )
 
     def fit(self, X, y):
-        """
-        Fit the model to the training data.
-        Parameters:
-        X : pd.DataFrame(single row in table)
-        y : pd.Series(target variable)
-        """
-
         self.pipeline.fit(X, y)
 
     def predict(self, X_test):
