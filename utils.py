@@ -116,9 +116,10 @@ def get_data(country, indices=[], demand=[0], temp=[0], spv=[0], n_futures=4):
                     new_df[col_name] = new_df[base_col].shift(lag)
 
         # Final cleanup
-        times = new_df["DATETIME"].dt.time
-        new_df = new_df.drop(columns=["DATETIME"])
-        new_df = new_df.dropna().reset_index(drop=True)
+        new_df = new_df.dropna()
+
+        times = new_df["DATETIME"]
+        new_df = new_df.drop(columns=["DATETIME"]).reset_index(drop=True)
 
         columns = new_df.columns.tolist()
         columns = [col for col in columns if "lead" in col]
