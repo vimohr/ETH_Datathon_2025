@@ -2,3 +2,8 @@ numpy
 matplotlib
 pandas
 lightning
+xgboost
+scikit-learn
+scipy
+lightgbm
+catboost
