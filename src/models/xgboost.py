@@ -1,6 +1,7 @@
 import xgboost as xgb
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import MinMaxScaler
+import joblib
 
 
 class XGB1:
@@ -26,3 +27,17 @@ class XGB1:
 
     def predict(self, X_test):
         return self.pipeline.predict(X_test)
+
+    def save(self, path):
+        """
+        Save the model to a file.
+        Parameters:
+        path : str
+            Path to save the model.
+        """
+        joblib.dump(self.pipeline, path)
+        print(f"Model saved to {path}")
+
+    def load(self, path):
+        self.pipeline = joblib.load(path)
+        print(f"Model loaded from {path}")
