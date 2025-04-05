@@ -9,4 +9,5 @@ lightgbm
 catboost
 seaborn
 plotly
+statsmodels
 ipykernel
