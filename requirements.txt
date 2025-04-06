@@ -9,3 +9,6 @@ lightgbm
 catboost
 seaborn
 plotly
+jax
+statsmodels
+torch
