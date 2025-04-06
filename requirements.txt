@@ -12,3 +12,5 @@ plotly
 jax
 statsmodels
 torch
+pmdarima
+openpyxl
