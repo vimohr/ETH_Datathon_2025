@@ -1,43 +1,35 @@
-from src.models.decisiontrees.xgboost import XGB1
-from src.models.decisiontrees.catboost import CatBoost1
+from carlo_utils import get_data
 from src.models.decisiontrees.lightgbm import LGBM1
-from utils import get_data
+
 import pandas as pd
-import matplotlib.pyplot as plt
 import numpy as np
-import webbrowser
 
-
-len_week = 24 * 7
-
-X, y, times = get_data(
-    "ES",
-    indices=[114],
+all_data = get_data(
     demand=[0]
     + [i for i in range(1, 8000, 6)]
     + [i for i in range(6300, 6400)]
     + [i for i in range(8700, 8800)],
-    temp=[0, 1, 24, 24 * 7, 24 * 365],
-    spv=[0, 1, 24, 24 * 7, 24 * 365],
-    rollout_values=[-i for i in range(25)],
+    temp=[0, 1, 2, 3, 4, 5, 6, 24, 24 * 7, 24 * 365],
+    spv=[0, 2, 3, 4, 5, 6, 1, 24, 24 * 7, 24 * 365],
+    n_futures=31 * 24,
+    rollout_values=[i for i in range(30)],
 )
 
-X_train = X[0][:-800]
-y_train = y[0][:-800]
-X_test = X[0][-800:]
-y_test = y[0][-800:]
-times_train = times[0][:-800]
-times_test = times[0][-800:]
 
-print(X_train.shape)
-print(y_train.shape)
-print(X_test.shape)
-print(y_test.shape)
-print(times_train.shape)
-print(times_test.shape)
+cutoff = pd.to_datetime("2024-06-01")
 
-model = XGB1()
-model2 = CatBoost1(loss_function="MultiRMSE")
-model3 = LGBM1()
+train_data = all_data[all_data.index < cutoff]
+test_data = all_data[all_data.index >= cutoff]
 
-model2.fit(X_train, y_train)
+forecast_columns = train_data.columns[train_data.columns.str.contains("forecast")]
+X_train = train_data.drop(columns=forecast_columns)
+y_train = train_data[forecast_columns]
+
+X_test = test_data.drop(columns=forecast_columns)
+y_test = test_data[forecast_columns]
+
+X_train.shape, y_train.shape, X_test.shape, y_test.shape
+
+from src.models.decisiontrees.lightgbm import LGBM1
+
+model = LGBM1()
