@@ -92,7 +92,7 @@ def get_data(
 
     holiday_dataframe = pd.DataFrame(index=index, columns=["holiday"])
     holiday_dataframe["holiday"] = holiday_dataframe.index.isin(
-        pd.to_datetime(holiday_data["holiday_ES"])
+        pd.to_datetime(holiday_data[f"holiday_{country}"].values)
     ).astype(int)
     holiday_dataframe["weekend"] = holiday_dataframe.index.weekday >= 5
     holiday_dataframe["holiday"] = holiday_dataframe["holiday"].fillna(0).astype(int)
@@ -201,7 +201,7 @@ def get_data(
     return main_dataframe
 
 
-def fourier_reconstruction_extended(df, n_top=100, index=None):
+def fourier_reconstruction_extended(df, n_top=10, index=None):
     s = df.iloc[:, 0]
     T = len(s)
     fft_values = np.fft.fft(s.values)
@@ -230,7 +230,7 @@ def fourier_reconstruction_extended(df, n_top=100, index=None):
         columns=new_index,
     ).T
 
-    lags = [24, 24 * 7, 24 * 31, 24 * 90, 24 * 265] + [-i for i in range(1, 31)]
+    lags = [24, 24 * 7, 24 * 31, 24 * 90, 24 * 265] + [-i for i in range(1,23)]
     lagged_dfs = [reconstruction_df]
     for lag in lags:
         lagged = reconstruction_df.shift(lag)
