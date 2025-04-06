@@ -1,4 +1,4 @@
-# 🌍 Aliq Datathon 2025 – Energy Demand Forecasting
+# 🌍 Alpiq Datathon 2025 – Energy Demand Forecasting
 
 ## 📊 Project: Time Series Forecasting of Energy Demand Data
 
@@ -104,8 +104,8 @@ The project presentation (5 minutes) is available in the `presentation/` folder 
 To reproduce our results:
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/aliq-datathon-2025.git
-cd aliq-datathon-2025
+git clone https://github.com/vimohr/ETH_Datathon_2025.git
+cd ETH_Datathon_2025
 pip install -r requirements.txt
 ```
 
