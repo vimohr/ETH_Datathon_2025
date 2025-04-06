@@ -7,24 +7,28 @@ from sklearn.preprocessing import MinMaxScaler
 from tqdm import tqdm
 import matplotlib.pyplot as plt
 
+    
 class TimeSeriesDataset(Dataset):
-    def __init__(self, data, seq_len=24):
-        self.seq_len = seq_len
-        # self.data = data["value"].values
+    def __init__(self, data, seq_len, fut_seq_len):
         self.data = data
-
+        self.seq_len = seq_len
+        self.fut_seq_len = fut_seq_len
+        self.valid_indices = [
+            i for i in range(len(data) - seq_len - fut_seq_len + 1)
+        ]
 
     def __len__(self):
-        return len(self.data) - self.seq_len
+        return len(self.valid_indices)
 
     def __getitem__(self, idx):
-        x = self.data[idx:idx + self.seq_len]  # Input sequence
-        y = self.data[idx + self.seq_len]  # Target value
+        i = self.valid_indices[idx]
+        x = self.data[i : i + self.seq_len]
+        y = self.data[i + self.seq_len : i + self.seq_len + self.fut_seq_len]
         return torch.tensor(x, dtype=torch.float32), torch.tensor(y, dtype=torch.float32)
-    
+
 
 class LSTMForecast(nn.Module):
-    def __init__(self, input_dim=1, hidden_dim=64, num_layers=2):
+    def __init__(self, fut_seq_len, input_dim=8767, hidden_dim=60, num_layers=2):
         super(LSTMForecast, self).__init__()
         self.lstm = nn.LSTM(input_dim, hidden_dim, num_layers, batch_first=True)
         self.fc = nn.Sequential(
@@ -33,17 +37,17 @@ class LSTMForecast(nn.Module):
             nn.Linear(32, 1)
         )
         self.norm = nn.LayerNorm(hidden_dim)
+        self.fut_seq_len = fut_seq_len
 
     def forward(self, x):
         # x = x.unsqueeze(-1)  # Add channel dimension
         out, _ = self.lstm(x)
-        out = self.fc(out[:, -1, :])  # Get the output of the last timestep
-        # return self.fc(out) # FOR MULTI-STEP PREDICTION!
+        out = self.fc(out[:, -self.fut_seq_len:, :]) 
         return out
 
 
 class TimeSeriesTransformer(nn.Module):
-    def __init__(self, input_dim=1, model_dim=64, num_heads=4, num_layers=2, dropout=0.1, seq_len=24):
+    def __init__(self, seq_len, input_dim=1, model_dim=64, num_heads=4, num_layers=2, dropout=0.1):
         super(TimeSeriesTransformer, self).__init__()
 
         self.model_dim = model_dim
